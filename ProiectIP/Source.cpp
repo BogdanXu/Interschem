@@ -1,3 +1,28 @@
+/****************************************************************************************************************
+Proiect Interschem
+
+TO DO::/------------------
+-
+-
+--------------------------/
+
+
+Idee
+Razvan:Ideea mea era sa punem butoanele pe stanga, si atunci cand le tragi sa le iei efectiv de acolo. apoi cand
+dai release sa se creeze un nou buton in locul liber. 
+
+Texturile erau pentru butoane si blocuri, alea cu margine sa fie butoane si alea fara sa fie blocurile, sa se faca 
+albastre cand le selectezi; daca folosim ideea mea, atunci nu prea ar merge ca daca iei butonul ar trebui sa se schimbe
+cand ii dai drumul la varianta de bloc... mi-am rezolvat propria problema;
+Asadar:
++Tragi un buton din stanga
++Il pui pe main board
++Se creeaza un alt buton in stanga
++Textura blocului pe care tocmai l-ai pus se schimba la varianta de bloc
++Cu click stanga poti sa tragi linii
+
+
+*/
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
@@ -5,9 +30,8 @@
 using namespace std;
 using namespace sf;
 
-Sprite Buton[24];
+Sprite Buton[24];//butoanele din stanga
 Texture ButonTexture;
-
 
 
 void Canvas_R(int state, RenderWindow& window)
@@ -28,7 +52,7 @@ void Canvas_R(int state, RenderWindow& window)
 }
 
 
-void loadTextures()
+void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, dar mai bine sa fie o alta functie pt celelalte
 {
 	if (!ButonTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
@@ -70,11 +94,12 @@ int main()
 	RenderWindow window(VideoMode(800, 600), "INTERSCHEM");
 	window.setFramerateLimit(60);
 
-	ButonTexture.loadFromFile("Texturi.png");
-	loadTextures();
+	//ButonTexture.loadFromFile("Texturi.png");//de asta nu e nevoie ca e deja in loadTextures, ma gandeam ca nu merge dar aparent da
+	loadTextures_R();
 
 	Vector2f offset(80.f, 30.f);
 
+	//trasare sageti//
 	sf::Vertex line[2];
 	bool sageata[10] = { false };
 
@@ -100,7 +125,7 @@ int main()
 				}
 				break;
 			case Event::MouseButtonReleased:
-				for (int i = 0; i < 6; i++)sageata[i] = false;
+				for (int i = 0; i < 6; i++)sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
 
 				break;
 			}
@@ -130,7 +155,7 @@ int main()
 }
 
 
-/**
+/** cod care face aproape acelasi lucru, e cu drag& drop dar nu prea functioneaza cum trebuie, ar trebui sters tbh, poate mai e ceva pe aici *shrug*
 void Canvas_R(int step,RenderWindow &window)
 {
 	if(step==1)
