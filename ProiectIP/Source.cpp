@@ -101,6 +101,7 @@ int main()
 	//trasare sageti//
 	sf::Vertex line[2];
 	bool sageata[10] = { false };
+	bool ismove[10] = { false };
 
 	while (window.isOpen())
 	{
@@ -122,13 +123,23 @@ int main()
 							sageata[i] = true;
 						}
 				}
+				else if (event.key.code == Mouse::Left)
+				{
+					for (int i = 0; i < 6; i++)
+						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+						{
+							ismove[i] = true;
+						}
+				}
 				break;
 			case Event::MouseButtonReleased:
-				for (int i = 0; i < 6; i++)sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
-
+				for (int i = 0; i < 6; i++) {
+					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
+					ismove[i] = false;
+				}
 				break;
 			}
-
+		}
 			///draw///
 			window.clear();
 
@@ -137,18 +148,17 @@ int main()
 			Canvas_R(1, window);
 			for (int i = 0; i < 6; i++)
 				window.draw(Buton[i]);
-			for (int i = 0; i < 6; i++)
 			///drag&drop///
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			for (int i = 0; i < 6; i++)
+			if (ismove[i])
 			{
-				{
-					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-					if (Buton[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
-					{
-						Buton[i].setOrigin(100.0f, 50.0f);
-						Buton[i].setPosition((float)mousePos.x, (float)mousePos.y);
-					}
-				}
+				
+					//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
+						//Buton[i].setOrigin(100.0f, 50.0f);
+						Buton[i].setPosition((float)pos.x-offset.x, (float)pos.y-offset.y);
+					//}
+			
 
 			}
 
@@ -164,7 +174,7 @@ int main()
 
 			}
 			window.display();
-		}
+		
 	}
 	return 0;
 }
