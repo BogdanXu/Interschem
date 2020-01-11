@@ -201,20 +201,21 @@ int main()
 			for (int i = 0; i < 6; i++)
 				window.draw(Buton[i]);
 			///drag&drop///
-			/*
+			
 			for (int i = 0; i < 6; i++)
 				if (!isIntersecting[i]&&checkCollision_R(Buton[i], pos, posin[i]))
 				{
 					cout << "Se Intersecteaza cu";
-					Buton[i].setPosition(posin[i].x,posin[i].y);
-				}*/
+					Buton[i].setPosition(posin[i].x+50,posin[i].y+50);
+				}
 			for (int i = 0; i < 6; i++)
-			if (ismove[i] &&!checkCollision_R(Buton[i], pos, posin[i]))
+			if (ismove[i] && !checkCollision_R(Buton[i], pos, posin[i]))
 			{		
 					//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 					//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
 						//Buton[i].setOrigin(100.0f, 50.0f);
 						Buton[i].setPosition((float)pos.x-offset.x, (float)pos.y-offset.y);
+						
 					//}
 
 			}
