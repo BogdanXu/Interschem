@@ -9,9 +9,9 @@ TO DO::/------------------
 
 Idee
 Razvan:Ideea mea era sa punem butoanele pe stanga, si atunci cand le tragi sa le iei efectiv de acolo. apoi cand
-dai release sa se creeze un nou buton in locul liber. 
+dai release sa se creeze un nou buton in locul liber.
 
-Texturile erau pentru butoane si blocuri, alea cu margine sa fie butoane si alea fara sa fie blocurile, sa se faca 
+Texturile erau pentru butoane si blocuri, alea cu margine sa fie butoane si alea fara sa fie blocurile, sa se faca
 albastre cand le selectezi; daca folosim ideea mea, atunci nu prea ar merge ca daca iei butonul ar trebui sa se schimbe
 cand ii dai drumul la varianta de bloc... mi-am rezolvat propria problema;
 Asadar:
@@ -140,41 +140,41 @@ int main()
 				break;
 			}
 		}
-			///draw///
-			window.clear();
+		///draw///
+		window.clear();
 
-			bool isPressed = false;
+		bool isPressed = false;
 
-			Canvas_R(1, window);
-			for (int i = 0; i < 6; i++)
-				window.draw(Buton[i]);
-			///drag&drop///
-			for (int i = 0; i < 6; i++)
+		Canvas_R(1, window);
+		for (int i = 0; i < 6; i++)
+			window.draw(Buton[i]);
+		///drag&drop///
+		for (int i = 0; i < 6; i++)
 			if (ismove[i])
 			{
-				
-					//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-					//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
-						//Buton[i].setOrigin(100.0f, 50.0f);
-						Buton[i].setPosition((float)pos.x-offset.x, (float)pos.y-offset.y);
-					//}
-			
+
+				//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+				//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
+					//Buton[i].setOrigin(100.0f, 50.0f);
+				Buton[i].setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
+				//}
+
 
 			}
 
-			for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 6; i++)
+		{
+			if (sageata[i])
 			{
-				if (sageata[i])
-				{
-					line[0] = sf::Vertex(sf::Vector2f(Buton[i].getPosition().x + offset.x, Buton[i].getPosition().y + offset.y)),
-						line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
-					window.draw(line, 2, sf::Lines);
-				}
-
-
+				line[0] = sf::Vertex(sf::Vector2f(Buton[i].getPosition().x + offset.x, Buton[i].getPosition().y + offset.y)),
+					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
+				window.draw(line, 2, sf::Lines);
 			}
-			window.display();
-		
+
+
+		}
+		window.display();
+
 	}
 	return 0;
 }
