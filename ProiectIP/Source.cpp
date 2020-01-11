@@ -30,6 +30,8 @@ Asadar:
 using namespace std;
 using namespace sf;
 
+#define MAXBUTOANE 30
+
 Sprite Buton[24];//butoanele din stanga
 Texture ButonTexture;
 
@@ -83,9 +85,30 @@ struct butoanie
 
 };
 
-
-void drag_r()
+Vector2f getDist(Sprite but1, Sprite but2)
 {
+	int x1 = but1.getPosition().x;
+	int y1 = but1.getPosition().y;
+	int x2 = but2.getPosition().x;
+	int y2 = but2.getPosition().y;
+	Vector2f dist;
+
+	//dist=sqrt( pow(x2 - x1,2) + pow((y2 - y1),2));
+	dist.x = abs(x2 - x1);
+	dist.y = abs(y2 - y1);
+	return dist;
+}
+
+bool checkCollision_R(Sprite butonCurent,Vector2i mpos,Vector2i posin)
+{
+	for (int i = 0; i < 6; i++)
+	{	if (getDist(butonCurent, Buton[i]).x<=150 && getDist(butonCurent, Buton[i]).y <= 73 && getDist(butonCurent, Buton[i]).x != 0 && getDist(butonCurent, Buton[i]).y != 0)
+		{
+		return true;
+		}
+
+	}
+	return false;
 }
 
 
@@ -101,11 +124,14 @@ int main()
 	//trasare sageti//
 	sf::Vertex line[2];
 	bool sageata[10] = { false };
+	
 	bool ismove[10] = { false };
+	bool isIntersecting[MAXBUTOANE] = { false };
+	bool isClicked = false;
+	Vector2i posin[MAXBUTOANE];
 
 	while (window.isOpen())
-	{
-		Vector2i pos = Mouse::getPosition(window);
+	{	Vector2i pos = Mouse::getPosition(window);
 		Event event;
 		while (window.pollEvent(event))
 		{
@@ -115,8 +141,11 @@ int main()
 				window.close();
 				break;
 			case Event::MouseButtonPressed:
+
+
 				if (event.key.code == Mouse::Right)
 				{
+					isClicked = true;
 					for (int i = 0; i < 6; i++)
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
@@ -125,18 +154,26 @@ int main()
 				}
 				else if (event.key.code == Mouse::Left)
 				{
+					isClicked = true;
 					for (int i = 0; i < 6; i++)
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
 							ismove[i] = true;
+							isIntersecting[i] = false;
+
 						}
+
 				}
 				break;
 			case Event::MouseButtonReleased:
 				for (int i = 0; i < 6; i++) {
 					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
 					ismove[i] = false;
+					isIntersecting[i] = true;
+					isClicked = false;
+
 				}
+
 				break;
 			}
 		}
@@ -146,21 +183,42 @@ int main()
 			bool isPressed = false;
 
 			Canvas_R(1, window);
+			if (!isClicked)
+			{
+				cout << "falsa" << endl;
+				for (int i = 0; i < 6; i++)
+				{
+					posin[i].x = Buton[i].getPosition().x;
+					posin[i].y = Buton[i].getPosition().y;
+				}
+			}
+			else cout << "adevarata" << endl;
+
+			cout << posin[0].x << endl;
+			cout << posin[0].y << endl;
+
+			
 			for (int i = 0; i < 6; i++)
 				window.draw(Buton[i]);
 			///drag&drop///
+			/*
 			for (int i = 0; i < 6; i++)
-			if (ismove[i])
-			{
-				
+				if (!isIntersecting[i]&&checkCollision_R(Buton[i], pos, posin[i]))
+				{
+					cout << "Se Intersecteaza cu";
+					Buton[i].setPosition(posin[i].x,posin[i].y);
+				}*/
+			for (int i = 0; i < 6; i++)
+			if (ismove[i] &&!checkCollision_R(Buton[i], pos, posin[i]))
+			{		
 					//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 					//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
 						//Buton[i].setOrigin(100.0f, 50.0f);
 						Buton[i].setPosition((float)pos.x-offset.x, (float)pos.y-offset.y);
 					//}
-			
 
 			}
+			else
 
 			for (int i = 0; i < 6; i++)
 			{
@@ -173,6 +231,7 @@ int main()
 
 
 			}
+			
 			window.display();
 		
 	}
