@@ -33,6 +33,8 @@ using namespace sf;
 Sprite Buton[24];//butoanele din stanga
 Texture ButonTexture;
 
+int k = 0;
+bool ismove[100] = { false };
 
 void Canvas_R(int state, RenderWindow& window)
 {
@@ -60,7 +62,7 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 
-	int k = 0;
+
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -75,6 +77,21 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	}
 }
 
+void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
+{
+	if (!ButonTexture.loadFromFile("Texturi.png"))
+		cout << "Texturi couldn't be loaded";
+	Vector2u textureSize = ButonTexture.getSize();
+	textureSize.x = textureSize.x / 4 + 3;
+	textureSize.y = textureSize.y / 6;
+	Buton[k].setTexture(ButonTexture);
+	Buton[k].setTextureRect(IntRect(textureSize.x * 2+11, textureSize.y * lin, textureSize.x-13, textureSize.y));
+	Buton[k].setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
+	Buton[k].setScale(0.75, 0.75);
+	k++;
+	
+
+}
 
 struct butoanie
 {
@@ -97,12 +114,9 @@ int main()
 	loadTextures_R();
 
 	Vector2f offset(80.f, 30.f);
-
 	//trasare sageti//
 	sf::Vertex line[2];
-	bool sageata[10] = { false };
-	bool ismove[10] = { false };
-
+	bool sageata[100] = { false };
 	while (window.isOpen())
 	{
 		Vector2i pos = Mouse::getPosition(window);
@@ -117,7 +131,7 @@ int main()
 			case Event::MouseButtonPressed:
 				if (event.key.code == Mouse::Right)
 				{
-					for (int i = 0; i < 6; i++)
+					for (int i = 6; i < k; i++) //toti vectorii merg de la 6, cei de spawn (0-5) nu trebuie nici sa se miste, nici sa traga linie, deci nu ii luam in considerare in for
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
 							sageata[i] = true;
@@ -125,7 +139,10 @@ int main()
 				}
 				else if (event.key.code == Mouse::Left)
 				{
-					for (int i = 0; i < 6; i++)
+					for(int i=0;i<6;i++) //daca dai click pe cele din meniu
+						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+							create_button(i); //se spawneaza butonul cu nr i in dreapta lui
+					for (int i = 6; i < k; i++)
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
 							ismove[i] = true;
@@ -133,7 +150,7 @@ int main()
 				}
 				break;
 			case Event::MouseButtonReleased:
-				for (int i = 0; i < 6; i++) {
+				for (int i = 6; i < k; i++) { 
 					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
 					ismove[i] = false;
 				}
@@ -142,14 +159,14 @@ int main()
 		}
 		///draw///
 		window.clear();
-
 		bool isPressed = false;
 
 		Canvas_R(1, window);
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < k; i++)
 			window.draw(Buton[i]);
+
 		///drag&drop///
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < k; i++)
 			if (ismove[i])
 			{
 
@@ -161,8 +178,7 @@ int main()
 
 
 			}
-
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < k; i++)
 		{
 			if (sageata[i])
 			{
