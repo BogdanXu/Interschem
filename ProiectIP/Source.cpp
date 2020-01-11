@@ -68,7 +68,6 @@ void drag_r()
 int main()
 {
 	RenderWindow window(VideoMode(800, 600), "INTERSCHEM");
-	window.setFramerateLimit(60);
 
 	ButonTexture.loadFromFile("Texturi.png");
 	loadTextures();
@@ -108,10 +107,26 @@ int main()
 			///draw///
 			window.clear();
 
+			bool isPressed = false;
 
 			Canvas_R(1, window);
 			for (int i = 0; i < 6; i++)
 				window.draw(Buton[i]);
+			for (int i = 0; i < 6; i++)
+			///drag&drop///
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				{
+					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					if (Buton[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
+					{
+						Buton[i].setOrigin(100.0f, 50.0f);
+						Buton[i].setPosition((float)mousePos.x, (float)mousePos.y);
+					}
+				}
+
+			}
+
 			for (int i = 0; i < 6; i++)
 			{
 				if (sageata[i])
