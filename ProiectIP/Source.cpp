@@ -9,9 +9,9 @@ TO DO::/------------------
 
 Idee
 Razvan:Ideea mea era sa punem butoanele pe stanga, si atunci cand le tragi sa le iei efectiv de acolo. apoi cand
-dai release sa se creeze un nou buton in locul liber. 
+dai release sa se creeze un nou buton in locul liber.
 
-Texturile erau pentru butoane si blocuri, alea cu margine sa fie butoane si alea fara sa fie blocurile, sa se faca 
+Texturile erau pentru butoane si blocuri, alea cu margine sa fie butoane si alea fara sa fie blocurile, sa se faca
 albastre cand le selectezi; daca folosim ideea mea, atunci nu prea ar merge ca daca iei butonul ar trebui sa se schimbe
 cand ii dai drumul la varianta de bloc... mi-am rezolvat propria problema;
 Asadar:
@@ -30,11 +30,11 @@ Asadar:
 using namespace std;
 using namespace sf;
 
-#define MAXBUTOANE 30
-int k = 0;
 Sprite Buton[24];//butoanele din stanga
 Texture ButonTexture;
 
+int k = 0;
+bool ismove[100] = { false };
 
 void Canvas_R(int state, RenderWindow& window)
 {
@@ -62,7 +62,7 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 
-	int k = 0;
+
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -100,33 +100,25 @@ struct butoanie
 
 };
 
-Vector2f getDist(Sprite but1, Sprite but2)
-{
-	int x1 = but1.getPosition().x;
-	int y1 = but1.getPosition().y;
-	int x2 = but2.getPosition().x;
-	int y2 = but2.getPosition().y;
-	Vector2f dist;
 
-	//dist=sqrt( pow(x2 - x1,2) + pow((y2 - y1),2));
-	dist.x = abs(x2 - x1);
-	dist.y = abs(y2 - y1);
-	return dist;
+void drag_r()
+{
 }
 
-bool checkCollision_R(Sprite butonCurent,Vector2i mpos,Vector2i posin)
+bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
 {
-	for (int i = 0; i < k; i++)
-	{	if (getDist(butonCurent, Buton[i]).x<=150 && getDist(butonCurent, Buton[i]).y <= 73 && getDist(butonCurent, Buton[i]).x != 0 && getDist(butonCurent, Buton[i]).y != 0)
+	int nr = 0;
+		if (Button.getGlobalBounds().contains(posi.x, posi.y))
+			nr++;
+		for (int j = 0; j < k && j != i; j++)
+			if (Buton[j].getGlobalBounds().contains(posi.x, posi.y))
+				nr++;
+		if (nr > 1)
 		{
-		return true;
+			 return 0;
 		}
-
-	}
-	return false;
+	return 1;
 }
-
-
 int main()
 {
 	RenderWindow window(VideoMode(800, 600), "INTERSCHEM");
@@ -135,18 +127,12 @@ int main()
 	loadTextures_R();
 
 	Vector2f offset(80.f, 30.f);
-
 	//trasare sageti//
 	sf::Vertex line[2];
-	bool sageata[MAXBUTOANE] = { false };
-	bool isIntersecting[MAXBUTOANE] = { false };
-	bool isClicked = false;
-	bool ismove[MAXBUTOANE] = { false };
-	
-	Vector2i posin[MAXBUTOANE];
-
+	bool sageata[100] = { false };
 	while (window.isOpen())
-	{	Vector2i pos = Mouse::getPosition(window);
+	{
+		Vector2i pos = Mouse::getPosition(window);
 		Event event;
 		while (window.pollEvent(event))
 		{
@@ -156,107 +142,68 @@ int main()
 				window.close();
 				break;
 			case Event::MouseButtonPressed:
-
-
 				if (event.key.code == Mouse::Right)
 				{
-					isClicked = true;
-					
-					for (int i = 5; i < 10; i++)
+					for (int i = 6; i < k; i++) //toti vectorii merg de la 6, cei de spawn (0-5) nu trebuie nici sa se miste, nici sa traga linie, deci nu ii luam in considerare in for
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
 							sageata[i] = true;
 						}
 				}
 				else if (event.key.code == Mouse::Left)
-				{	
+				{
 					for (int i = 0; i < 6; i++) //daca dai click pe cele din meniu
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 							create_button(i); //se spawneaza butonul cu nr i in dreapta lui
-
-					isClicked = true;
-					for (int i = 5; i < k; i++)
-						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+					for (int i = 6; i < k; i++)
+						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(Buton[i], pos, i))
 						{
 							ismove[i] = true;
-							isIntersecting[i] = false;
-
 						}
-
 				}
 				break;
 			case Event::MouseButtonReleased:
-				for (int i = 0; i < k; i++) {
+				for (int i = 6; i < k; i++) {
 					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
 					ismove[i] = false;
-					isIntersecting[i] = true;
-					isClicked = false;
-
 				}
-
 				break;
 			}
 		}
-			///draw///
-			window.clear();
+		///draw///
+		window.clear();
+		bool isPressed = false;
 
-			bool isPressed = false;
+		Canvas_R(1, window);
+		for (int i = 0; i < k; i++)
+			window.draw(Buton[i]);
 
-			Canvas_R(1, window);
-			if (!isClicked)
-			{
-				cout << "falsa" << endl;
-				for (int i = 0; i < k; i++)
-				{
-					posin[i].x = Buton[i].getPosition().x;
-					posin[i].y = Buton[i].getPosition().y;
-				}
-			}
-			else cout << "adevarata" << endl;
-
-			cout << posin[0].x << endl;
-			cout << posin[0].y << endl;
-
-			
-			for (int i = 0; i < 6; i++)
-				window.draw(Buton[i]);
-			///drag&drop///
-			
-			for (int i = 0; i < k; i++)
-				if (!isIntersecting[i]&&checkCollision_R(Buton[i], pos, posin[i]))
-				{
-					cout << "Se Intersecteaza cu";
-					Buton[i].setPosition(posin[i].x+50,posin[i].y+50);
-				}
-			for (int i = 0; i < k; i++)
+		///drag&drop///
+		for (int i = 0; i < k; i++)
+			if (ismove[i])
 			{
 
-
-				if (ismove[i] && !checkCollision_R(Buton[i], pos, posin[i]))
-				{
-					//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-					//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
-						//Buton[i].setOrigin(100.0f, 50.0f);
-					Buton[i].setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
-
-					//}
-
-				}
-			
-			}
-			for (int i = 5; i < k; i++)
-			{	if (sageata[i])
-				{
-					line[0] = sf::Vertex(sf::Vector2f(Buton[i].getPosition().x + offset.x, Buton[i].getPosition().y + offset.y)),
-						line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
-					window.draw(line, 2, sf::Lines);
-				}
+				//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+				//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
+					//Buton[i].setOrigin(100.0f, 50.0f);
+				Buton[i].setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
+				//}
 
 
 			}
-			
-			window.display();
-		
+		for (int i = 0; i < k; i++)
+		{
+			if (sageata[i])
+			{
+				line[0] = sf::Vertex(sf::Vector2f(Buton[i].getPosition().x + offset.x, Buton[i].getPosition().y + offset.y)),
+					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
+				window.draw(line, 2, sf::Lines);
+			}
+
+
+		}
+		window.display();
+
 	}
 	return 0;
 }
