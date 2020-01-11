@@ -206,7 +206,7 @@ int main()
 				if (!isIntersecting[i]&&checkCollision_R(Buton[i], pos, posin[i]))
 				{
 					cout << "Se Intersecteaza cu";
-					Buton[i].setPosition(posin[i].x+50,posin[i].y+50);
+					Buton[i].setPosition(posin[i].x,posin[i].y+10);
 				}
 			for (int i = 0; i < 6; i++)
 			if (ismove[i] && !checkCollision_R(Buton[i], pos, posin[i]))
