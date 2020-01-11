@@ -139,13 +139,12 @@ int main()
 	Vector2f offset(80.f, 30.f);
 	//trasare sageti//
 	sf::Vertex line[2];
-	bool sageata[100] = { false };
-
-	
+	bool sageata[10] = { false };
 	bool ismove[10] = { false };
 	bool isIntersecting[MAXBUTOANE] = { false };
 	bool isClicked = false;
 	Vector2i posin[MAXBUTOANE];
+	bool ismove[10] = { false };
 
 	while (window.isOpen())
 	{	Vector2i pos = Mouse::getPosition(window);
@@ -173,7 +172,8 @@ int main()
 				{
 					for(int i=0;i<6;i++) //daca dai click pe cele din meniu
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
-							create_button(i); //se spawneaza butonul cu nr i in dreapta lui
+							create_button(i); //se spawneaza butonul cu nr i in dreapta lui	
+					isClicked = true;
 					for (int i = 6; i < k; i++)
 						if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
 						{
@@ -224,7 +224,7 @@ int main()
 				if (!isIntersecting[i]&&checkCollision_R(Buton[i], pos, posin[i]))
 				{
 					cout << "Se Intersecteaza cu";
-					Buton[i].setPosition(posin[i].x,posin[i].y+10);
+					Buton[i].setPosition(posin[i].x+50,posin[i].y+50);
 				}
 			for (int i = 0; i < 6; i++)
 			if (ismove[i] && !checkCollision_R(Buton[i], pos, posin[i]))
