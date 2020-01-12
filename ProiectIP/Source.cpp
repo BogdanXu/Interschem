@@ -76,6 +76,16 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 		}
 	}
 }
+void hoverTexture_R(int p,bool isHovering)
+{	Vector2u textureSize = ButonTexture.getSize();
+	textureSize.x = textureSize.x / 4 + 1;
+	textureSize.y = textureSize.y / 6 + 1;
+			
+	if(isHovering)
+		Buton[p].setTextureRect(IntRect(textureSize.x * 1, textureSize.y * p, textureSize.x, textureSize.y));
+	else
+		Buton[p].setTextureRect(IntRect(textureSize.x * 0, textureSize.y * p, textureSize.x, textureSize.y));
+}
 
 void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 {
@@ -168,6 +178,8 @@ int main()
 					ismove[i] = false;
 				}
 				break;
+			case Event::MouseMoved:
+				break;
 			}
 		}
 		///draw///
@@ -175,9 +187,18 @@ int main()
 		bool isPressed = false;
 
 		Canvas_R(1, window);
+		
+		for (int i = 0; i < 6; i++)
+		{
+			if (Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+				isPressed = true;
+			else
+				isPressed = false;
+				hoverTexture_R(i,isPressed);
+
+		}
 		for (int i = 0; i < k; i++)
 			window.draw(Buton[i]);
-
 		///drag&drop///
 		for (int i = 0; i < k; i++)
 			if (ismove[i])
@@ -196,7 +217,7 @@ int main()
 			if (sageata[i])
 			{
 				line[0] = sf::Vertex(sf::Vector2f(Buton[i].getPosition().x + offset.x, Buton[i].getPosition().y + offset.y)),
-					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
+				line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
 				window.draw(line, 2, sf::Lines);
 			}
 
