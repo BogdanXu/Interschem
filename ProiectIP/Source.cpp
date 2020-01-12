@@ -39,10 +39,10 @@ Texture LoaderTexture;
 struct buttons_structure
 {
 	char tip;
-	Sprite Buton;//butoanele din stanga
+	Sprite Buton;
 	Texture ButonTexture;
 
-}B[100];
+}B[50];
 void Canvas_R(int state, RenderWindow& window)
 {
 	Texture full;
@@ -105,8 +105,28 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 	B[k].Buton.setTextureRect(IntRect(textureSize.x * 2 + 11, textureSize.y * lin, textureSize.x - 13, textureSize.y));
 	B[k].Buton.setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
 	B[k].Buton.setScale(0.75, 0.75);
+	switch (lin)
+	{
+	case 0:
+		B[k].tip = 's';
+		break;			//start
+	case 1:
+		B[k].tip = 'f'; 
+		break;			//stop
+	case 2:
+		B[k].tip = 'i'; 
+		break;			//intrare
+	case 3:
+		B[k].tip = 'o'; 
+		break;			//iesire
+	case 4:
+		B[k].tip = 'a'; 
+		break;			//atribuire
+	case 5:
+		B[k].tip = 'c'; 
+		break;			//conditie
+	}
 	k++;
-
 
 }
 
