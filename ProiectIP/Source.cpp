@@ -31,7 +31,7 @@ using namespace std;
 using namespace sf;
 
 
-
+Vector2f offset(80.f, 30.f);
 int k = 0;
 bool ismove[100] = { false };
 Sprite Loader;
@@ -40,7 +40,9 @@ struct buttons_structure
 {
 	char tip;
 	Sprite Buton;
-	Texture ButonTexture;
+	sf::Text text;
+	sf::String text_content;
+
 
 }B[50];
 void Canvas_R(int state, RenderWindow& window)
@@ -94,8 +96,9 @@ void hoverTexture_R(int p,bool isHovering)
 		B[p].Buton.setTextureRect(IntRect(textureSize.x * 0, textureSize.y * p, textureSize.x, textureSize.y));
 }
 
+	sf::Font font;
 void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
-{
+{	
 	if (!LoaderTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
 	Vector2u textureSize = LoaderTexture.getSize();
@@ -105,6 +108,15 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 	B[k].Buton.setTextureRect(IntRect(textureSize.x * 2 + 11, textureSize.y * lin, textureSize.x - 13, textureSize.y));
 	B[k].Buton.setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
 	B[k].Buton.setScale(0.75, 0.75);
+
+	if (!font.loadFromFile("Arial.ttf"))
+		cout << "font could not be loaded \n";
+	B[k].text.setFont(font);
+	B[k].text.setCharacterSize(30);
+	B[k].text.setString("<?>");
+	B[k].text.setPosition(B[k].Buton.getPosition()+Vector2f(50.f,20.f));
+
+
 	switch (lin)
 	{
 	case 0:
@@ -158,7 +170,7 @@ int main()
 	//ButonTexture.loadFromFile("Texturi.png");//de asta nu e nevoie ca e deja in loadTextures, ma gandeam ca nu merge dar aparent da
 	loadTextures_R();
 
-	Vector2f offset(80.f, 30.f);
+
 	//trasare sageti//
 	sf::Vertex line[2];
 	bool sageata[100] = { false };
@@ -209,18 +221,19 @@ int main()
 		bool isPressed = false;
 
 		Canvas_R(1, window);
-		
+
 		for (int i = 0; i < 6; i++)
 		{
 			if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 				isPressed = true;
 			else
 				isPressed = false;
-				hoverTexture_R(i,isPressed);
+			hoverTexture_R(i, isPressed);
 
 		}
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
+
 		///drag&drop///
 		for (int i = 0; i < k; i++)
 			if (ismove[i])
@@ -236,15 +249,18 @@ int main()
 			}
 		for (int i = 0; i < k; i++)
 		{
+			B[i].text.setPosition(B[i].Buton.getPosition() + Vector2f(50.f, 20.f));
 			if (sageata[i])
 			{
 				line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
-				line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
+					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
 				window.draw(line, 2, sf::Lines);
 			}
 
 
 		}
+		for (int i = 5; i < k; i++)
+			window.draw(B[i].text);
 		window.display();
 
 	}
