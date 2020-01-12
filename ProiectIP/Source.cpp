@@ -113,6 +113,7 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 		cout << "font could not be loaded \n";
 	B[k].text.setFont(font);
 	B[k].text.setCharacterSize(30);
+	if(lin>1)
 	B[k].text.setString("<?>");
 	B[k].text.setPosition(B[k].Buton.getPosition()+Vector2f(50.f,20.f));
 
@@ -212,6 +213,28 @@ int main()
 					ismove[i] = false;
 				}
 				break;
+			case Event::TextEntered:
+			{
+				for (int i = 6; i < k; i++)
+					if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y) && event.text.unicode < 128 && B[i].tip != 's' && B[i].tip != 'f')
+					{
+						{
+							if (event.text.unicode == 8)
+							{
+								B[i].text.setString("<?>");
+									B[i].text_content.erase(0, 10);
+							}
+							else
+							{
+								B[i].text_content += event.text.unicode;
+									B[i].text.setString(B[i].text_content);
+
+							}
+						}
+
+					}
+			}
+			break;
 			case Event::MouseMoved:
 				break;
 			}
