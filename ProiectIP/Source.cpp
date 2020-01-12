@@ -34,14 +34,15 @@ using namespace sf;
 
 int k = 0;
 bool ismove[100] = { false };
-
+Sprite Loader;
+Texture LoaderTexture;
 struct buttons_structure
 {
 	char tip;
-	Sprite Buton[24];//butoanele din stanga
+	Sprite Buton;//butoanele din stanga
 	Texture ButonTexture;
 
-}B;
+}B[100];
 void Canvas_R(int state, RenderWindow& window)
 {
 	Texture full;
@@ -62,9 +63,9 @@ void Canvas_R(int state, RenderWindow& window)
 
 void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, dar mai bine sa fie o alta functie pt celelalte
 {
-	if (!B.ButonTexture.loadFromFile("Texturi.png"))
+	if (!LoaderTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
-	Vector2u textureSize = B.ButonTexture.getSize();
+	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 
@@ -74,36 +75,36 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	{
 		for (int j = 0; j < 1; j++)
 		{
-			B.Buton[k].setTexture(B.ButonTexture);
-			B.Buton[k].setTextureRect(IntRect(textureSize.x * j, textureSize.y * i, textureSize.x, textureSize.y));
-			B.Buton[k].setPosition(textureSize.x * j + 10, (textureSize.y - 5) * i + 30);
-			B.Buton[k].setScale(0.75, 0.75);
+			B[k].Buton.setTexture(LoaderTexture);
+			B[k].Buton.setTextureRect(IntRect(textureSize.x * j, textureSize.y * i, textureSize.x, textureSize.y));
+			B[k].Buton.setPosition(textureSize.x * j + 10, (textureSize.y - 5) * i + 30);
+			B[k].Buton.setScale(0.75, 0.75);
 			k++;
 		}
 	}
 }
 void hoverTexture_R(int p,bool isHovering)
-{	Vector2u textureSize = B.ButonTexture.getSize();
+{	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 			
 	if(isHovering)
-		B.Buton[p].setTextureRect(IntRect(textureSize.x * 1, textureSize.y * p, textureSize.x, textureSize.y));
+		B[p].Buton.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * p, textureSize.x, textureSize.y));
 	else
-		B.Buton[p].setTextureRect(IntRect(textureSize.x * 0, textureSize.y * p, textureSize.x, textureSize.y));
+		B[p].Buton.setTextureRect(IntRect(textureSize.x * 0, textureSize.y * p, textureSize.x, textureSize.y));
 }
 
 void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 {
-	if (!B.ButonTexture.loadFromFile("Texturi.png"))
+	if (!LoaderTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
-	Vector2u textureSize = B.ButonTexture.getSize();
+	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 3;
 	textureSize.y = textureSize.y / 6;
-	B.Buton[k].setTexture(B.ButonTexture);
-	B.Buton[k].setTextureRect(IntRect(textureSize.x * 2 + 11, textureSize.y * lin, textureSize.x - 13, textureSize.y));
-	B.Buton[k].setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
-	B.Buton[k].setScale(0.75, 0.75);
+	B[k].Buton.setTexture(LoaderTexture);
+	B[k].Buton.setTextureRect(IntRect(textureSize.x * 2 + 11, textureSize.y * lin, textureSize.x - 13, textureSize.y));
+	B[k].Buton.setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
+	B[k].Buton.setScale(0.75, 0.75);
 	k++;
 
 
@@ -122,7 +123,7 @@ bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
 		if (Button.getGlobalBounds().contains(posi.x, posi.y))
 			nr++;
 		for (int j = 0; j < k && j != i; j++)
-			if (B.Buton[j].getGlobalBounds().contains(posi.x, posi.y))
+			if (B[j].Buton.getGlobalBounds().contains(posi.x, posi.y))
 				nr++;
 		if (nr > 1)
 		{
@@ -156,7 +157,7 @@ int main()
 				if (event.key.code == Mouse::Right)
 				{
 					for (int i = 6; i < k; i++) //toti vectorii merg de la 6, cei de spawn (0-5) nu trebuie nici sa se miste, nici sa traga linie, deci nu ii luam in considerare in for
-						if (B.Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+						if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 						{
 							sageata[i] = true;
 						}
@@ -164,10 +165,10 @@ int main()
 				else if (event.key.code == Mouse::Left)
 				{
 					for (int i = 0; i < 6; i++) //daca dai click pe cele din meniu
-						if (B.Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+						if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 							create_button(i); //se spawneaza butonul cu nr i in dreapta lui
 					for (int i = 6; i < k; i++)
-						if (B.Buton[i].getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(B.Buton[i], pos, i))
+						if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(B[i].Buton, pos, i))
 						{
 							ismove[i] = true;
 						}
@@ -191,7 +192,7 @@ int main()
 		
 		for (int i = 0; i < 6; i++)
 		{
-			if (B.Buton[i].getGlobalBounds().contains(pos.x, pos.y))
+			if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 				isPressed = true;
 			else
 				isPressed = false;
@@ -199,7 +200,7 @@ int main()
 
 		}
 		for (int i = 0; i < k; i++)
-			window.draw(B.Buton[i]);
+			window.draw(B[i].Buton);
 		///drag&drop///
 		for (int i = 0; i < k; i++)
 			if (ismove[i])
@@ -208,7 +209,7 @@ int main()
 				//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 				//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
 					//Buton[i].setOrigin(100.0f, 50.0f);
-				B.Buton[i].setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
+				B[i].Buton.setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
 				//}
 
 
@@ -217,7 +218,7 @@ int main()
 		{
 			if (sageata[i])
 			{
-				line[0] = sf::Vertex(sf::Vector2f(B.Buton[i].getPosition().x + offset.x, B.Buton[i].getPosition().y + offset.y)),
+				line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
 				line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
 				window.draw(line, 2, sf::Lines);
 			}
