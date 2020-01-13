@@ -214,12 +214,16 @@ int main()
 					{
 						if (k > 6)
 						{
+							L[k].line[0] = sf::Vertex(sf::Vector2f(0, 0));
+							L[k].line[1] = sf::Vertex(sf::Vector2f(0, 0));
 							for (int i = 6; i < k; i++)
 							{
 								a[k][i] = 0;
 								a[i][k] = 0;
+								
 							}
 							k--;
+							
 						}
 					}
 				}
@@ -307,7 +311,7 @@ int main()
 					L[j].line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
 					L[j].line[1] = sf::Vertex(sf::Vector2f(B[j].Buton.getPosition().x + offset.x, B[j].Buton.getPosition().y + offset.y));
 			}
-		for(int i=0; i<=k;i++)
+		for(int i=0; i<k;i++)
 			window.draw(L[i].line, 2, sf::Lines);
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
