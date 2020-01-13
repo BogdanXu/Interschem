@@ -45,7 +45,7 @@ struct buttons_structure
 	sf::Text text;
 	sf::String text_content;
 	int valoare;
-	int ok=0;
+	bool ok=0;
 }B[50];
 void Canvas_R(int state, RenderWindow& window)
 {
@@ -206,6 +206,11 @@ int main()
 						{
 							ismove[i] = true;
 						}
+					if (Start_Parcurgere.getGlobalBounds().contains(pos.x, pos.y))
+					{
+						if(k>6)
+						k--;
+					}
 				}
 				break;
 			case Event::MouseButtonReleased:
@@ -219,7 +224,6 @@ int main()
 					if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(B[i].Buton,pos,i))
 					{
 						link[i] = true;
-						B[i].ok = 2;
 					}
 				}
 				break;
@@ -262,21 +266,28 @@ int main()
 			else
 				isPressed = false;
 			hoverTexture_R(i, isPressed);
-
 		}
-		for(int i=6;i<k;i++)
-			if(B[i].ok==1)
-			for (int j = 6; j < k && j!=i; j++)
-			{
-				if (B[j].ok==2 && link[j] && a[j][i]!=1 && a[i][j] != 1)
+		for (int i = 6; i < k; i++)
+		{
+			int nr = 1;
+			if (B[i].ok == 1)
+				for (int j = 6; j < k && j != i; j++)
 				{
-					a[j][i] = 1;
-					cout << "legatura de la " << j << " la " << i<<endl;
-					link[j] = false;
-					B[j].ok = 0;
-					B[i].ok = 0;
+					if (B[j].ok == 1 && link[j] && a[j][i] != 1 && a[i][j] != 1)
+					{
+						a[j][i] = 1;
+						cout << "legatura de la " << j << " la " << i << endl;
+						nr++;
+						B[i].ok = 0;
+						B[j].ok = 0;
+					}
 				}
+			if (nr == 2)
+			{
+				for (int i = 6; i < k; i++)
+					B[i].ok = 0;
 			}
+		}
 
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
@@ -287,7 +298,7 @@ int main()
 			{
 
 				//sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-				//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){
+				//if (Buton[i].getGlobalBounds().contains(pos.x, pos.y)){s
 					//Buton[i].setOrigin(100.0f, 50.0f);
 				B[i].Buton.setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
 				//}
