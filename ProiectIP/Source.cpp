@@ -33,6 +33,7 @@ using namespace sf;
 
 Vector2f offset(80.f, 30.f);
 int k = 0;
+int l = 0;
 bool ismove[100] = { false };
 Sprite Start_Parcurgere;
 Texture LoaderTexture;
@@ -172,7 +173,10 @@ int main()
 
 
 	//trasare sageti//
-	sf::Vertex line[2];
+	struct linii
+	{
+		sf::Vertex line[2];
+	}L[50];
 	bool sageata[100] = { false };
 	bool link[100] = { false };
 	while (window.isOpen())
@@ -208,8 +212,15 @@ int main()
 						}
 					if (Start_Parcurgere.getGlobalBounds().contains(pos.x, pos.y))
 					{
-						if(k>6)
-						k--;
+						if (k > 6)
+						{
+							for (int i = 6; i < k; i++)
+							{
+								a[k][i] = 0;
+								a[i][k] = 0;
+							}
+							k--;
+						}
 					}
 				}
 				break;
@@ -277,6 +288,7 @@ int main()
 					{
 						a[j][i] = 1;
 						cout << "legatura de la " << j << " la " << i << endl;
+						l++;
 						nr++;
 						B[i].ok = 0;
 						B[j].ok = 0;
@@ -288,7 +300,15 @@ int main()
 					B[i].ok = 0;
 			}
 		}
-
+		for(int i= 6; i<k; i++)
+			for (int j = 6; j < k; j++)
+			{
+				if (a[i][j] == 1)
+					L[l].line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
+					L[l].line[1] = sf::Vertex(sf::Vector2f(B[j].Buton.getPosition().x + offset.x, B[j].Buton.getPosition().y + offset.y));
+			}
+		for(int i=0; i<=l;i++)
+			window.draw(L[i].line, 2, sf::Lines);
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
 		window.draw(Start_Parcurgere);
@@ -310,9 +330,9 @@ int main()
 			B[i].text.setPosition(B[i].Buton.getPosition() + Vector2f(50.f, 20.f));
 			if (sageata[i])
 			{
-				line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
-					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));///Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
-				window.draw(line, 2, sf::Lines);
+				/*line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
+					line[1] = sf::Vertex(sf::Vector2f((float)Mouse::getPosition(window).x, (float)Mouse::getPosition(window).y));*////Mai am variabila pos, care face acelasi lucru, dar asa cred ca e mai explicit
+
 			}
 
 
