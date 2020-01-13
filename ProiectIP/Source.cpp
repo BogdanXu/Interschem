@@ -36,13 +36,15 @@ int k = 0;
 bool ismove[100] = { false };
 Sprite Loader;
 Texture LoaderTexture;
+bool a[50][50] = { 0 };
+
 struct buttons_structure
 {
 	char tip;
 	Sprite Buton;
 	sf::Text text;
 	sf::String text_content;
-
+	int valoare;
 
 }B[50];
 void Canvas_R(int state, RenderWindow& window)
@@ -145,11 +147,6 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 
 
 
-
-void drag_r()
-{
-}
-
 bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
 {
 	int nr = 0;
@@ -175,6 +172,7 @@ int main()
 	//trasare sageti//
 	sf::Vertex line[2];
 	bool sageata[100] = { false };
+	bool link[100] = { false };
 	while (window.isOpen())
 	{
 		Vector2i pos = Mouse::getPosition(window);
@@ -211,6 +209,14 @@ int main()
 				for (int i = 6; i < k; i++) {
 					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
 					ismove[i] = false;
+				}
+				for (int i = 6; i < k; i++)
+				{
+					if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(B[i].Buton,pos,i))
+					{
+						link[i] = true;
+						
+					}
 				}
 				break;
 			case Event::TextEntered:
@@ -254,6 +260,15 @@ int main()
 			hoverTexture_R(i, isPressed);
 
 		}
+		for(int i=6;i<k;i++)
+			for (int j = 6; j < k; j++)
+			{
+				if (sageata[i] && link[j] && i!=j && a[j][i]!=1)
+				{
+					a[i][j] = 1;
+					cout << "legatura de la " << i << " la " << j<<endl;
+				}
+			}
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
 
