@@ -34,7 +34,7 @@ using namespace sf;
 Vector2f offset(80.f, 30.f);
 int k = 0;
 bool ismove[100] = { false };
-Sprite Loader;
+Sprite Start_Parcurgere;
 Texture LoaderTexture;
 bool a[50][50] = { 0 };
 
@@ -45,7 +45,7 @@ struct buttons_structure
 	sf::Text text;
 	sf::String text_content;
 	int valoare;
-
+	int ok=0;
 }B[50];
 void Canvas_R(int state, RenderWindow& window)
 {
@@ -73,8 +73,10 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 
-
-
+	Start_Parcurgere.setTexture(LoaderTexture);
+	Start_Parcurgere.setTextureRect(IntRect(textureSize.x * 3, textureSize.y * 0, textureSize.x, textureSize.y));
+	Start_Parcurgere.setPosition(637.0f, 65.0f);
+	Start_Parcurgere.setScale(0.75, 0.75);
 	for (int i = 0; i < 6; i++)
 	{
 		for (int j = 0; j < 1; j++)
@@ -191,6 +193,7 @@ int main()
 						if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 						{
 							sageata[i] = true;
+							B[i].ok = 1;
 						}
 				}
 				else if (event.key.code == Mouse::Left)
@@ -207,15 +210,16 @@ int main()
 				break;
 			case Event::MouseButtonReleased:
 				for (int i = 6; i < k; i++) {
-					sageata[i] = false;//asta s-ar putea sa fie prea inceata si sa cauzeze probleme,
+					sageata[i] = false; //asta s-ar putea sa fie prea inceata si sa cauzeze probleme
 					ismove[i] = false;
 				}
+				if(event.key.code==Mouse::Right)
 				for (int i = 6; i < k; i++)
 				{
 					if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y) && checkmultiplehover(B[i].Buton,pos,i))
 					{
 						link[i] = true;
-						
+						B[i].ok = 2;
 					}
 				}
 				break;
@@ -261,17 +265,22 @@ int main()
 
 		}
 		for(int i=6;i<k;i++)
-			for (int j = 6; j < k; j++)
+			if(B[i].ok==1)
+			for (int j = 6; j < k && j!=i; j++)
 			{
-				if (sageata[i] && link[j] && i!=j && a[j][i]!=1)
+				if (B[j].ok==2 && link[j] && a[j][i]!=1 && a[i][j] != 1)
 				{
-					a[i][j] = 1;
-					cout << "legatura de la " << i << " la " << j<<endl;
+					a[j][i] = 1;
+					cout << "legatura de la " << j << " la " << i<<endl;
+					link[j] = false;
+					B[j].ok = 0;
+					B[i].ok = 0;
 				}
 			}
+
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
-
+		window.draw(Start_Parcurgere);
 		///drag&drop///
 		for (int i = 0; i < k; i++)
 			if (ismove[i])
