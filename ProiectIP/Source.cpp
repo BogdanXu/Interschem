@@ -38,7 +38,7 @@ bool ismove[100] = { false };
 Sprite MeniuS[10];
 Texture LoaderTexture;
 bool a[50][50] = { 0 };
-
+bool visited[50] = { 0 };
 struct buttons_structure
 {
 	char tip;
@@ -285,33 +285,89 @@ void output(string cstring)
 		}
 	}
 }
+
 struct valori
 {
 	int valoare;
 	char nume;
 }v[26];
+
 void reseteazaVars()
 {
+	for (int i = 0; i < 50; i++)
+		visited[i] = 0;
 	for (int i = 0; i < 26; i++)
 	{
 		v[i].valoare = 0;
 		v[i].nume = 'A' + i;
 	}
 }
-void parcurgere(int i)
+int caut_valoare(char a)
 {
-	int ok = 0;
-	for (int j = 6; j < k; j++)
-		if (a[i][j] == 1)
+	for (int i = 0; i < 26; i++)
+		if (v[i].valoare != 0 && v[i].nume == a)
+			return v[i].valoare;
+}
+int evaluare_conditie(int a, int b, char op)
+{
+	switch (op)
+	{
+	case '<':
+		if (a < b)
+			return true;
+		else return false;
+		break;
+	case '>':
+		if (a > b)
+			return true;
+		else return false;
+		break;	
+	case '=':
+			if (a == b)
+				return true;
+			else return false;
+			break;
+	case '#':
+		if (a != b)
+			return true;
+		else return false;
+		break;
+	case '[':
+		if (a <= b)
+			return true;
+		else return false;
+		break;
+	case ']':
+		if (a >= b)
+			return true;
+		else return false;
+		break;
+	}
+	
+}
+bool parcurgere(int i, int ok)
+{
+	int j;
+	/*if (B[i].tip == 'f')
+	{
+		cout << "Stop \n";
+		ok = 0;
+		return 0;
+	}*/
+	ok = 0;
+	visited[i] = 1;
+	for (j = 6; j < k; j++)
+		if (a[i][j] == 1 && visited[j]==0)
 		{
-			cout << "sunt la " << i<<endl;//<<" tipul este "<<B[j].tip<<endl;
 
+			cout << "sunt la " << i << " "<<endl;//<<" tipul este "<<B[j].tip<<endl;
+			ok = 1;
 			switch (B[i].tip)
 			{
 			case 's':
 				break;
 			case 'i':
-				printf("Introduceti variabila: ");
+				cout<<"Introduceti variabila "<<(char)B[i].text_content[0]<<" ";
 				for (int x = 0; x < 26; x++)
 				{
 					if (v[x].nume == B[i].text_content)
@@ -326,17 +382,33 @@ void parcurgere(int i)
 				}
 				break;
 			case 'f':
+				ok = 0;
+				return true;
 				break;
 			case 'a':
+				for (int x = 0; x < 26; x++)
+					if ((char)B[i].text_content[0] == v[x].nume)
+					{
+						v[x].valoare = caut_valoare((char)B[i].text_content[2]);
+						cout << "Am atribuit lui " << (char)B[i].text_content[0] << " valoarea " << v[x].valoare << endl;
+					}
 				break;
 			case 'c':
+				if (!(evaluare_conditie(caut_valoare((char)B[i].text_content[0]), caut_valoare((char)B[i].text_content[2]), (char)B[i].text_content[1]))) //daca e fals, cauta urmatorul nod cu care are legatura
+				{
+					visited[j] = 1; //marcheaza nodul adevarat ca vizitat
+					for (int x = j + 1; x < k; x++)
+						if (a[i][x] == 1)
+						{
+							j = x; 
+						}
+				}
+				else cout << "adevarat \n";
 				break;
 			}
-			ok = 1;
-			parcurgere(j);
+			if(ok==1)
+			parcurgere(j, 0); //daca nu, parcurge in continuare
 		}
-	if (ok == 0)
-		std::cout << "Am ajuns la " << i << '\n';
 }
 
 int main()
@@ -425,7 +497,7 @@ int main()
 						if (i == 1)
 						{
 							reseteazaVars();
-							parcurgere(6);
+							parcurgere(6, 1);
 						}
 
 						if (i == 2)
@@ -467,7 +539,6 @@ int main()
 
 							}
 						}
-
 					}
 			}
 			break;
