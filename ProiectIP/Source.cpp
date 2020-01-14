@@ -190,12 +190,46 @@ void afis_matrice()
 		cout << endl;
 	}
 }
+
+void output(string cstring)
+{
+	for(int i=6;i<k;i++)
+	{ 
+		if (B[i].text_content == cstring)
+		{
+			cout << B[i].valoare<<endl;
+			cout << B[i].tip;
+		}
+	}
+}
 void parcurgere(int i)
 {
 	int ok = 0;
 	for (int j = 6; j < k; j++)
 		if (a[i][j] == 1)
 		{
+			cout << "sunt la " << j<<endl;//<<" tipul este "<<B[j].tip<<endl;
+
+			switch (B[j].tip)
+			{
+			case 's':
+				break;
+			case 'i':
+				printf("Introduceti variabila");
+				//scanf_s("%f", &B[j].valoare);
+				cin >> B[j].valoare;
+				break;
+			case 'o':
+				output(B[i].text_content);
+				break;
+			case 'f':
+				break;
+			case 'a':
+				break;
+			case 'c':
+				break;
+			}
+
 			parcurgere(j);
 			ok = 1;
 		}
