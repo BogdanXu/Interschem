@@ -190,6 +190,18 @@ void afis_matrice()
 		cout << endl;
 	}
 }
+void parcurgere(int i)
+{
+	int ok = 0;
+	for (int j = 6; j < k; j++)
+		if (a[i][j] == 1)
+		{
+			parcurgere(j);
+			ok = 1;
+		}
+	if (ok == 0)
+		std::cout << "Am ajuns la " << i << '\n';
+}
 
 int main()
 {
@@ -275,6 +287,8 @@ int main()
 
 							
 						}
+						if (i == 1)
+							parcurgere(6);
 
 						if (i == 2)
 							afis_matrice();
