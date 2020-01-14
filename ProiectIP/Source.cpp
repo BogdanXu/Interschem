@@ -355,7 +355,7 @@ int main()
 		{
 			if (B[i].ok == 2 && nr == 2)
 			{
-				cout << "Nu poti lega acelasi buton cu el insusi! \n";
+				cout << "Legatura invalida \n";
 				nr = 0;
 				x1 = -1;
 				x2 = -1;
@@ -375,13 +375,14 @@ int main()
 		for(int i= 6; i<k; i++)
 			for (int j = 6; j < k; j++)
 			{
-				if (a[i][j] == 1)
-					L[j].line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
+				if (a[i][j] == 1 || a[j][i]==1)
+				{
+					L[j].line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y));
 					L[j].line[1] = sf::Vertex(sf::Vector2f(B[j].Buton.getPosition().x + offset.x, B[j].Buton.getPosition().y + offset.y));
+					window.draw(L[i].line, 2, sf::Lines);
+					window.draw(L[j].line, 2, sf::Lines);
+				}
 			}
-
-		for(int i=0; i<k;i++)
-			window.draw(L[i].line, 2, sf::Lines);
 
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
