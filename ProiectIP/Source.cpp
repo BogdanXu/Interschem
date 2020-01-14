@@ -46,8 +46,9 @@ struct buttons_structure
 	sf::Text text;
 	sf::String text_content;
 	int valoare;
-	bool ok=0;
+	int ok=0;
 }B[50];
+
 void Canvas_R(int state, RenderWindow& window)
 {
 	Texture full;
@@ -70,6 +71,7 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 {
 	if (!LoaderTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
+
 	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
@@ -78,6 +80,7 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	Start_Parcurgere.setTextureRect(IntRect(textureSize.x * 3, textureSize.y * 0, textureSize.x, textureSize.y));
 	Start_Parcurgere.setPosition(637.0f, 65.0f);
 	Start_Parcurgere.setScale(0.75, 0.75);
+
 	for (int i = 0; i < 6; i++)
 	{
 		for (int j = 0; j < 1; j++)
@@ -90,8 +93,10 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 		}
 	}
 }
+
 void hoverTexture_R(int p,bool isHovering)
-{	Vector2u textureSize = LoaderTexture.getSize();
+{	
+	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
 			
@@ -101,14 +106,17 @@ void hoverTexture_R(int p,bool isHovering)
 		B[p].Buton.setTextureRect(IntRect(textureSize.x * 0, textureSize.y * p, textureSize.x, textureSize.y));
 }
 
-	sf::Font font;
+sf::Font font;
+
 void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 {	
 	if (!LoaderTexture.loadFromFile("Texturi.png"))
 		cout << "Texturi couldn't be loaded";
 	Vector2u textureSize = LoaderTexture.getSize();
+
 	textureSize.x = textureSize.x / 4 + 3;
 	textureSize.y = textureSize.y / 6;
+
 	B[k].Buton.setTexture(LoaderTexture);
 	B[k].Buton.setTextureRect(IntRect(textureSize.x * 2 + 11, textureSize.y * lin, textureSize.x - 13, textureSize.y));
 	B[k].Buton.setPosition(textureSize.x * 2 - 225, (textureSize.y - 5) * lin + 30);
@@ -116,8 +124,10 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 
 	if (!font.loadFromFile("Arial.ttf"))
 		cout << "font could not be loaded \n";
+
 	B[k].text.setFont(font);
 	B[k].text.setCharacterSize(30);
+
 	if(lin>1)
 	B[k].text.setString("<?>");
 	B[k].text.setPosition(B[k].Buton.getPosition()+Vector2f(50.f,20.f));
@@ -164,6 +174,7 @@ bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
 		}
 	return 1;
 }
+
 int main()
 {
 	RenderWindow window(VideoMode(800, 600), "INTERSCHEM");
@@ -173,12 +184,14 @@ int main()
 
 
 	//trasare sageti//
+
 	struct linii
 	{
 		sf::Vertex line[2];
 	}L[50];
 	bool sageata[100] = { false };
 	bool link[100] = { false };
+	int nr = 0;
 	while (window.isOpen())
 	{
 		Vector2i pos = Mouse::getPosition(window);
@@ -190,16 +203,33 @@ int main()
 			case Event::Closed:
 				window.close();
 				break;
+
 			case Event::MouseButtonPressed:
 				if (event.key.code == Mouse::Right)
 				{
 					for (int i = 6; i < k; i++) //toti vectorii merg de la 6, cei de spawn (0-5) nu trebuie nici sa se miste, nici sa traga linie, deci nu ii luam in considerare in for
 						if (B[i].Buton.getGlobalBounds().contains(pos.x, pos.y))
 						{
-							sageata[i] = true;
-							B[i].ok = 1;
+							nr++;
+							if (nr == 1)
+							{
+								B[i].ok = 1;
+								std::cout << i << " are nr " << nr << "si B[i].ok " << B[i].ok << '\n';
+							}
+							else if (nr == 2)
+							{
+								B[i].ok = 2;
+								std::cout << i << " are nr " << nr << "si B[i].ok " << B[i].ok << '\n';
+							}
+							else if (nr == 3)
+							{
+								nr = 0;
+
+							}
+
 						}
 				}
+
 				else if (event.key.code == Mouse::Left)
 				{
 					for (int i = 0; i < 6; i++) //daca dai click pe cele din meniu
@@ -228,6 +258,7 @@ int main()
 					}
 				}
 				break;
+
 			case Event::MouseButtonReleased:
 				for (int i = 6; i < k; i++) {
 					sageata[i] = false; //asta s-ar putea sa fie prea inceata si sa cauzeze probleme
@@ -242,6 +273,7 @@ int main()
 					}
 				}
 				break;
+
 			case Event::TextEntered:
 			{
 				for (int i = 6; i < k; i++)
@@ -264,6 +296,7 @@ int main()
 					}
 			}
 			break;
+
 			case Event::MouseMoved:
 				break;
 			}
@@ -282,27 +315,62 @@ int main()
 				isPressed = false;
 			hoverTexture_R(i, isPressed);
 		}
+		int x1=-1, x2=-1;
 		for (int i = 6; i < k; i++)
 		{
-			int nr = 1;
 			if (B[i].ok == 1)
+			{
+				x1 = i;
+				/*cout << "first for \n";
 				for (int j = 6; j < k && j != i; j++)
 				{
-					if (B[j].ok == 1 && link[j] && a[j][i] != 1 && a[i][j] != 1)
+					if (B[j].ok == 2)
 					{
-						a[j][i] = 1;
-						cout << "legatura de la " << j << " la " << i << endl;
+						std::cout << "second for";
+						a[i][j] = 1;
+						cout << "legatura de la " << i << " la " << j << endl;
 						l++;
-						nr++;
 						B[i].ok = 0;
 						B[j].ok = 0;
 					}
-				}
-			if (nr == 2)
+				}*/
+			}
+			if (B[i].ok == 2)
 			{
+				x2 = i;
+			}
+		}
+		if (x1 != -1 && x2 != -1 && x1 != x2 && a[x2][x1] != 1 && a[x1][x2]!=1)
+		{
+			a[x1][x2] = 1;
+			cout << "legatura de la " << x1 << " la " << x2 << endl;
+			l++;
+			nr=0;
+			x1 = -1;
+			x2 = -1;
+			for (int i = 6; i < k; i++)
+				B[i].ok = 0;
+		}
+		for (int i = 6; i < k; i++)
+		{
+			if (B[i].ok == 2 && nr == 2)
+			{
+				cout << "Nu poti lega acelasi buton cu el insusi! \n";
+				nr = 0;
+				x1 = -1;
+				x2 = -1;
 				for (int i = 6; i < k; i++)
 					B[i].ok = 0;
 			}
+		}
+		if (x1 != -1 && x2 != -1 && x1 == x2)
+		{
+			nr = 0;
+			x1 = -1;
+			x2 = -1;
+			for (int i = 6; i < k; i++)
+				B[i].ok = 0;
+			cout << "Nu poti face legatura intre buton si el insusi!";
 		}
 		for(int i= 6; i<k; i++)
 			for (int j = 6; j < k; j++)
@@ -311,11 +379,15 @@ int main()
 					L[j].line[0] = sf::Vertex(sf::Vector2f(B[i].Buton.getPosition().x + offset.x, B[i].Buton.getPosition().y + offset.y)),
 					L[j].line[1] = sf::Vertex(sf::Vector2f(B[j].Buton.getPosition().x + offset.x, B[j].Buton.getPosition().y + offset.y));
 			}
+
 		for(int i=0; i<k;i++)
 			window.draw(L[i].line, 2, sf::Lines);
+
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
+
 		window.draw(Start_Parcurgere);
+
 		///drag&drop///
 		for (int i = 0; i < k; i++)
 			if (ismove[i])
@@ -327,8 +399,8 @@ int main()
 				B[i].Buton.setPosition((float)pos.x - offset.x, (float)pos.y - offset.y);
 				//}
 
-
 			}
+
 		for (int i = 0; i < k; i++)
 		{
 			B[i].text.setPosition(B[i].Buton.getPosition() + Vector2f(50.f, 20.f));
@@ -339,8 +411,8 @@ int main()
 
 			}
 
-
 		}
+
 		for (int i = 5; i < k; i++)
 			window.draw(B[i].text);
 		window.display();
