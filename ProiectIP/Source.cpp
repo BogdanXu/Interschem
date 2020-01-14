@@ -35,7 +35,7 @@ Vector2f offset(80.f, 30.f);
 int k = 0;
 int l = 0;
 bool ismove[100] = { false };
-Sprite Start_Parcurgere;
+Sprite MeniuS[10];
 Texture LoaderTexture;
 bool a[50][50] = { 0 };
 
@@ -66,7 +66,7 @@ void Canvas_R(int state, RenderWindow& window)
 	window.draw(bg1);
 }
 
-
+Texture LoaderTexture1;
 void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, dar mai bine sa fie o alta functie pt celelalte
 {
 	if (!LoaderTexture.loadFromFile("Texturi.png"))
@@ -75,12 +75,17 @@ void loadTextures_R()//incarca primele 6 butoane, le-ar putea incarca pe toate, 
 	Vector2u textureSize = LoaderTexture.getSize();
 	textureSize.x = textureSize.x / 4 + 1;
 	textureSize.y = textureSize.y / 6 + 1;
+	
 
-	Start_Parcurgere.setTexture(LoaderTexture);
-	Start_Parcurgere.setTextureRect(IntRect(textureSize.x * 3, textureSize.y * 0, textureSize.x, textureSize.y));
-	Start_Parcurgere.setPosition(637.0f, 65.0f);
-	Start_Parcurgere.setScale(0.75, 0.75);
-
+	if (!LoaderTexture1.loadFromFile("Texturi_2.png"))
+		cout << "Texturi_2 can't be loaded\n";
+		
+	for (int i = 0; i < 3; i++) {
+		MeniuS[i].setTexture(LoaderTexture1);
+		MeniuS[i].setTextureRect(IntRect(textureSize.x * 3, textureSize.y * i, textureSize.x, textureSize.y));
+		MeniuS[i].setPosition(637.0f, 80.0f*i+70);
+		MeniuS[i].setScale(0.75, 0.75);
+	}
 	for (int i = 0; i < 6; i++)
 	{
 		for (int j = 0; j < 1; j++)
@@ -175,6 +180,17 @@ bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
 	return 1;
 }
 
+void afis_matrice()
+{
+	for (int i = 6; i < k; i++)
+	{
+		cout << i << ":";
+		for (int j = 6; j < k; j++)
+			cout << a[i][j] << " ";
+		cout << endl;
+	}
+}
+
 int main()
 {
 	RenderWindow window(VideoMode(800, 600), "INTERSCHEM");
@@ -240,21 +256,28 @@ int main()
 						{
 							ismove[i] = true;
 						}
-					if (Start_Parcurgere.getGlobalBounds().contains(pos.x, pos.y))
+					for(int i=0;i<4;i++)
+					if (MeniuS[i].getGlobalBounds().contains(pos.x, pos.y))
 					{
-						if (k > 6)
+						if (k > 6 && i==0)
 						{
 							L[k].line[0] = sf::Vertex(sf::Vector2f(0, 0));
 							L[k].line[1] = sf::Vertex(sf::Vector2f(0, 0));
+							k--;
 							for (int i = 6; i < k; i++)
 							{
-								a[k][i] = 0;
-								a[i][k] = 0;
-								
+								if (a[k][i] == 0 || a[i][k] == 0)
+								{
+									a[k][i] = 0;
+									a[i][k] = 0;
+								}
 							}
-							k--;
+
 							
 						}
+
+						if (i == 2)
+							afis_matrice();
 					}
 				}
 				break;
@@ -386,8 +409,8 @@ int main()
 
 		for (int i = 0; i < k; i++)
 			window.draw(B[i].Buton);
-
-		window.draw(Start_Parcurgere);
+		for(int i=0;i<4;i++)
+		window.draw(MeniuS[i]);
 
 		///drag&drop///
 		for (int i = 0; i < k; i++)
