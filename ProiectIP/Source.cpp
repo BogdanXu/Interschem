@@ -26,7 +26,7 @@ Asadar:
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
-
+#define MAX 50
 using namespace std;
 using namespace sf;
 
@@ -163,6 +163,89 @@ void create_button(int lin)//incarca butonul de pe linia lin, coloana 3
 
 }
 
+int evaluator(char exp[MAX])
+{
+	char numstr[MAX];
+	int arr[MAX], arr2[MAX];
+	int i, j, k, num, op, val;
+
+	for (i = 0, j = 0, k = 0; i < strlen(exp); i++)
+	{
+		if (exp[i] == '*' || exp[i] == '/' || exp[i] == '+' || exp[i] == '-')
+		{
+			numstr[k] = '\0';
+			arr[j] = atoi(numstr);
+			j++;
+			if (exp[i] == '*')
+				arr[j] = -1;
+			else if (exp[i] == '/')
+				arr[j] = -2;
+			else if (exp[i] == '+')
+				arr[j] = -3;
+			else if (exp[i] == '-')
+				arr[j] = -4;
+			j++;
+			k = 0;
+		}
+		else
+		{
+			numstr[k] = exp[i];
+			k++;
+		}
+	}
+
+	numstr[k] = '\0';
+	arr[j] = atoi(numstr);
+	j++;
+	k = 0;
+
+	arr2[k] = arr[k];
+	k++;
+
+	for (i = 2; i < j; i += 2)
+	{
+		op = arr[i - 1];
+		num = arr[i];
+
+		if (op == -3 || op == -4)
+		{
+			arr2[k] = op;
+			k++;
+			arr2[k] = num;
+			k++;
+		}
+		else
+		{
+			k--;
+			if (op == -1)
+				arr2[k] = arr2[k] * num;
+			else
+				arr2[k] = arr2[k] / num;
+			k++;
+		}
+
+	}
+
+	val = arr2[0];
+	for (i = 2; i < k; i += 2)
+	{
+		op = arr2[i - 1];
+		num = arr2[i];
+
+		if (op == -3)
+		{
+			val = val + num;
+		}
+		else
+		{
+			val = val - num;
+		}
+	}
+
+	return val;
+
+	return 0;
+}
 
 
 bool checkmultiplehover(Sprite Button, Vector2i posi, int i)
@@ -202,25 +285,45 @@ void output(string cstring)
 		}
 	}
 }
+struct valori
+{
+	int valoare;
+	char nume;
+}v[26];
+void reseteazaVars()
+{
+	for (int i = 0; i < 26; i++)
+	{
+		v[i].valoare = 0;
+		v[i].nume = 'A' + i;
+	}
+}
 void parcurgere(int i)
 {
 	int ok = 0;
 	for (int j = 6; j < k; j++)
 		if (a[i][j] == 1)
 		{
-			cout << "sunt la " << j<<endl;//<<" tipul este "<<B[j].tip<<endl;
+			cout << "sunt la " << i<<endl;//<<" tipul este "<<B[j].tip<<endl;
 
-			switch (B[j].tip)
+			switch (B[i].tip)
 			{
 			case 's':
 				break;
 			case 'i':
-				printf("Introduceti variabila");
-				//scanf_s("%f", &B[j].valoare);
-				cin >> B[j].valoare;
+				printf("Introduceti variabila: ");
+				for (int x = 0; x < 26; x++)
+				{
+					if (v[x].nume == B[i].text_content)
+						cin >> v[x].valoare;
+				}
 				break;
 			case 'o':
-				output(B[i].text_content);
+				for (int x = 0; x < 26; x++)
+				{
+					if (v[x].nume == B[i].text_content)
+						cout << v[x].valoare <<" ";
+				}
 				break;
 			case 'f':
 				break;
@@ -229,9 +332,8 @@ void parcurgere(int i)
 			case 'c':
 				break;
 			}
-
-			parcurgere(j);
 			ok = 1;
+			parcurgere(j);
 		}
 	if (ok == 0)
 		std::cout << "Am ajuns la " << i << '\n';
@@ -265,7 +367,6 @@ int main()
 			case Event::Closed:
 				window.close();
 				break;
-
 			case Event::MouseButtonPressed:
 				if (event.key.code == Mouse::Right)
 				{
@@ -322,7 +423,10 @@ int main()
 							
 						}
 						if (i == 1)
+						{
+							reseteazaVars();
 							parcurgere(6);
+						}
 
 						if (i == 2)
 							afis_matrice();
